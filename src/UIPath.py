@@ -495,12 +495,14 @@ class Path(QWidget, Ui_Form):
 							self.CrossButton.setChecked(False)
 							return
 					pos = graphs.getPos()
-					black1 = BlackAreaUnit(pos[0], self.commands["width1"])
+					print "input num:",self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["position"], [-self.commands["last_slope"][self.commands["beginpoint"]][1][0], -self.commands["last_slope"][self.commands["beginpoint"]][1][1]]
+					black1 = BlackAreaUnit(pos[0], self.commands["width1"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["position"], [-self.commands["last_slope"][self.commands["beginpoint"]][1][0], -self.commands["last_slope"][self.commands["beginpoint"]][1][1]])
 					black1.setTransformOriginPoint(QPointF(pos[0][0], pos[0][1]))
-					black1.setRotation(self.commands["last_slope"][self.commands["beginpoint"]][0]*180/PI - 90)
-					black2 = BlackAreaUnit(pos[1], self.commands["width1"])
+					black1.setRotation(black1.getTheta())
+					print "input num2:",graphs.getSlope(), self.commands["position"], graphs.getDirection()
+					black2 = BlackAreaUnit(pos[1], self.commands["width1"], graphs.getSlope(), self.commands["position"], graphs.getDirection())
 					black2.setTransformOriginPoint(QPointF(pos[1][0], pos[1][1]))
-					black2.setRotation(graphs.getSlope()[0]*180/PI - 90)
+					black2.setRotation(black2.getTheta())
 					self.scene1.addItem(black1)
 					self.scene1.addItem(black2)
 					has = False
@@ -517,7 +519,7 @@ class Path(QWidget, Ui_Form):
 						bg = BeginPointUnit("%d" %self.commands["beginpoint"], graphs.getBeginPoint()[0][0], graphs.getBeginPoint()[0][1])
 						self.BeginPoint_list[self.commands["beginpoint"]] = bg
 						self.scene1.addItem(bg)
-						self.last_slope[self.commands["beginpoint"]] = graphs.getSlope()
+						self.last_slope[self.commands["beginpoint"]] = (graphs.getSlope(), graphs.getDirection())
 					self.scene1.addItem(graphs)
 					self.element_list.append(graphs)
 					self.RightAngleButton.setChecked(False)

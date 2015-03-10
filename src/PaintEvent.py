@@ -164,12 +164,12 @@ class ArcUnit(QGraphicsObject):
 
 	def getDirection(self):
 		angle = (self.start/16 + self.span/16)%360
-		print "return angle:", self.start, self.span, angle
-		if (angle in range(0, 90) or angle in range(-360, -270)) and self.span > 0 or (angle in range(180, 270) or angle in range(-180, -90)) and self.span < 0:
+		print "return angle:", self.start, self.span, angle, int(angle) in range(0, 90), self.span < 0
+		if int(angle) in range(0, 90) and self.span > 0 or int(angle) in range(180, 270) and self.span < 0:
 			return [-1, -1]
-		elif (angle in range(90, 180) or angle in range(-270, -180)) and self.span > 0 or (angle in range(270, 360) or angle in range(-90, 0)) and self.span < 0: 
+		elif int(angle) in range(90, 180) and self.span > 0 or int(angle) in range(270, 360) and self.span < 0: 
 			return [-1, 1]
-		elif (angle in range(180, 270) or angle in range(-180, -90)) and self.span > 0 or (angle in range(0, 90) or angle in range(-360, -270)) and self.span < 0:
+		elif int(angle) in range(180, 270) and self.span > 0 or int(angle) in range(0, 90) and self.span < 0:
 			return [1, 1]
 		else:
 			return [1, -1]
@@ -256,12 +256,12 @@ class CenterArcUnit(QGraphicsObject):
 
 	def getDirection(self):
 		angle = (self.start/16 + self.span/16)%360
-		print "return angle:", self.start, self.span, angle
-		if (angle in range(0, 90) or angle in range(-360, -270)) and self.span > 0 or (angle in range(180, 270) or angle in range(-180, -90)) and self.span < 0:
+		print "return angle:", self.start, self.span, angle, int(angle) in range(0, 90), self.span < 0
+		if int(angle) in range(0, 90) and self.span > 0 or int(angle) in range(180, 270) and self.span < 0:
 			return [-1, -1]
-		elif (angle in range(90, 180) or angle in range(-270, -180)) and self.span > 0 or (angle in range(270, 360) or angle in range(-90, 0)) and self.span < 0: 
+		elif int(angle) in range(90, 180) and self.span > 0 or int(angle) in range(270, 360) and self.span < 0: 
 			return [-1, 1]
-		elif (angle in range(180, 270) or angle in range(-180, -90)) and self.span > 0 or (angle in range(0, 90) or angle in range(-360, -270)) and self.span < 0:
+		elif int(angle) in range(180, 270) and self.span > 0 or int(angle) in range(0, 90) and self.span < 0:
 			return [1, 1]
 		else:
 			return [1, -1]
@@ -290,37 +290,68 @@ class RightAngleUnit(QGraphicsObject):
 		self.side = side
 		self.width1 = width1
 		self.width2 = width2
-		self.x_lu = self.x1 - math.sin(theta) * self.width1/2
-		self.y_lu = self.y1 + math.cos(theta) * self.width1/2
-		self.x_ld = self.x1 + math.sin(theta) * self.width1/2
-		self.y_ld = self.y1 - math.cos(theta) * self.width1/2
-		self.x_mu = self.x_lu + (110 + self.width1) * math.cos(theta) * direction[0]
-		self.y_mu = self.y_lu + (110 + self.width1) * math.sin(theta) * direction[1]
-		self.x_md = self.x_ld + 110 * math.cos(theta) * direction[0]
-		self.y_md = self.y_ld + 110 * math.sin(theta) * direction[1]
-		self.x_u = self.x_lu + 10 * math.cos(theta) * direction[0]
-		self.y_u = self.y_lu + 10 * math.sin(theta) * direction[1]
-		if theta > PI/2:
+		print "get message:",self.theta, direction, side, width1, width2, x1, y1
+		if theta >= 0:
+			self.x_lu = self.x1 + (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_lu = self.y1 - (math.cos(theta)) * self.width1/2 * self.direction[1]
+			self.x_ld = self.x1 - (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_ld = self.y1 + (math.cos(theta)) * self.width1/2 * self.direction[1]
+		else:
+			self.x_lu = self.x1 - (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_lu = self.y1 + (math.cos(theta)) * self.width1/2 * self.direction[1]
+			self.x_ld = self.x1 + (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_ld = self.y1 - (math.cos(theta)) * self.width1/2 * self.direction[1]
+		print "count start point: ",self.x_lu, self.y_lu, self.x_ld, self.y_ld
+		if self.side and self.direction == [1,1] or not self.side and self.direction == [-1,-1]:
+			self.new_direct = new_direct = [1,-1]
+		elif self.side and self.direction == [-1,1] or not self.side and self.direction == [1,-1]:
+			self.new_direct = new_direct = [1,1]
+		elif self.side and self.direction == [-1,-1] or not self.side and self.direction == [1,1]:
+			self.new_direct = new_direct = [-1,1]
+		else:
+			self.new_direct = new_direct = [-1,-1]
+		if not self.side:
+			self.x_mu = self.x_lu + (110 + self.width1) * abs(math.cos(theta)) * direction[0]
+			self.y_mu = self.y_lu + (110 + self.width1) * abs(math.sin(theta)) * direction[1]
+			self.x_md = self.x_ld + 110 * abs(math.cos(theta)) * direction[0]
+			self.y_md = self.y_ld + 110 * abs(math.sin(theta)) * direction[1]
+			self.x_u = self.x_lu + 10 * abs(math.cos(theta)) * direction[0]
+			self.y_u = self.y_lu + 10 * abs(math.sin(theta)) * direction[1]
+		else:
+			self.x_mu = self.x_lu + 110 * abs(math.cos(theta)) * direction[0]
+			self.y_mu = self.y_lu + 110 * abs(math.sin(theta)) * direction[1]
+			self.x_md = self.x_ld + (110 + self.width1) * abs(math.cos(theta)) * direction[0]
+			self.y_md = self.y_ld + (110 + self.width1) * abs(math.sin(theta)) * direction[1]
+			self.x_u = self.x_lu + 10 * abs(math.cos(theta)) * direction[0]
+			self.y_u = self.y_lu + 10 * abs(math.sin(theta)) * direction[1]
+		if theta > 0:
 			theta_ = theta - PI/2
 		else:
 			theta_ = theta + PI/2
-		self.x_ru = self.x_mu + (110 + self.width1) * math.cos(theta_) * 2 * (side - 0.5)
-		self.y_ru = self.y_mu + (110 + self.width1) * math.sin(theta_) * 2 * (side - 0.5)
-		self.x_rd = self.x_md + 110 * math.cos(theta_) * 2 * (side - 0.5)
-		self.y_rd = self.y_md + 110 * math.sin(theta_) * 2 * (side - 0.5)
-		print "end point is :",self.x_ru," ",self.y_ru," ",self.x_rd," ",self.y_rd
-		self.x_d = self.x_rd - 10 * math.cos(theta_) * 2 * (side - 0.5)
-		self.y_d = self.y_rd - 10 * math.sin(theta_) * 2 * (side - 0.5)
+		if not self.side:
+			self.x_ru = self.x_mu + (110 + self.width1) * abs(math.cos(theta_)) * new_direct[0]
+			self.y_ru = self.y_mu + (110 + self.width1) * abs(math.sin(theta_)) * new_direct[1]
+			self.x_rd = self.x_md + 110 * abs(math.cos(theta_)) * new_direct[0]
+			self.y_rd = self.y_md + 110 * abs(math.sin(theta_)) * new_direct[1]
+			self.x_d = self.x_rd - 10 * abs(math.cos(theta_)) * new_direct[0]
+			self.y_d = self.y_rd - 10 * abs(math.sin(theta_)) * new_direct[1]
+		else:
+			self.x_ru = self.x_mu + 110 * abs(math.cos(theta_)) * new_direct[0]
+			self.y_ru = self.y_mu + 110 * abs(math.sin(theta_)) * new_direct[1]
+			self.x_rd = self.x_md + (110 + self.width1) * abs(math.cos(theta_)) * new_direct[0]
+			self.y_rd = self.y_md + (110 + self.width1) * abs(math.sin(theta_)) * new_direct[1]
+			self.x_d = self.x_rd - 10 * abs(math.cos(theta_)) * new_direct[0]
+			self.y_d = self.y_rd - 10 * abs(math.sin(theta_)) * new_direct[1]
 
 	def getDirection(self):
-		return [self.direction[0], -self.direction[1]] if self.side == 0 else [-self.direction[0], self.direction[1]]
+		return self.new_direct
 
 	def getSlope(self):
 		if self.theta + PI/2 > PI/2:
 			self.theta -= PI
 		elif self.theta + PI/2 <= -PI/2:
 			self.theta += PI
-		return [(PI/2 + self.theta)]
+		return PI/2 + self.theta
 
 	def getPos(self):
 		return [(self.x_u, self.y_u), (self.x_d, self.y_d)]
@@ -346,14 +377,25 @@ class RightAngleUnit(QGraphicsObject):
 		painter.restore()
 
 class BlackAreaUnit(QGraphicsObject):
-	def __init__(self, pos, width, parent = None):
+	def __init__(self, pos, width, theta, side, direction, parent = None):
 		super(BlackAreaUnit, self).__init__(parent)
 		self.pos = pos
 		self.width = width
+		self.theta = theta
+		self.side = side
+		self.direction = direction
 		print "in black area:",self.pos
 
 	def boundingRect(self):
 		return QRectF(0,0,1000,1000)
+
+	def getTheta(self):
+		if self.direction[0] == 1:
+			print "output1:",-(- self.theta + PI/2) *180/PI
+			return -(- self.theta + PI/2) *180/PI
+		else:
+			print "output2:",(self.theta + PI/2) *180/PI
+			return (self.theta + PI/2) *180/PI
 
 	def paint(self, painter, option, widget = None):
 		painter.save()
