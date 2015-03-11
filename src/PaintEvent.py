@@ -12,13 +12,15 @@ class LineUnit(QGraphicsObject):
 		super(LineUnit, self).__init__(parent)
 		self.x1 = x1
 		self.y1 = y1
+		self.direction = direction
 		print self.x1, self.y1
 		if x2 and y2:
 			self.x2 = x2
 			self.y2 = y2
-			theta = math.atan2(y2-y1, x2-x1)
+			self.theta = theta = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
 		else:
 			self.length = length
+			self.theta = theta
 			print "direction:",theta, direction
 			self.x2 = self.x1 + abs(math.cos(theta)) * self.length * direction[0]
 			self.y2 = self.y1 + abs(math.sin(theta)) * self.length * direction[1]
@@ -64,11 +66,14 @@ class CenterLineUnit(QGraphicsObject):
 		super(CenterLineUnit, self).__init__(parent)
 		self.x1 = x1
 		self.y1 = y1
+		self.direction = direction
 		if x2 and y2:
 			self.x2 = x2
 			self.y2 = y2
+			self.theta = math.atan2(self.y2 - self.y1, self.x2 - self.x1)
 		else:
 			self.length = length
+			self.theta = theta
 			self.x2 = self.x1 + abs(math.cos(theta)) * self.length * direction[0]
 			self.y2 = self.y1 + abs(math.sin(theta)) * self.length * direction[1]
 		self.width2 = width2
@@ -106,6 +111,7 @@ class ArcUnit(QGraphicsObject):
 		self.width1 = width1
 		self.width2 = width2
 		self.radius = radius
+		self.direction = direction
 		self.theta = theta
 		if arc < 0:
 			self.x_c = self.x1 - abs(math.sin(self.theta)) * (self.radius) * direction[1]
@@ -199,6 +205,7 @@ class CenterArcUnit(QGraphicsObject):
 		self.radius = radius
 		self.theta = theta
 		self.width2 = width
+		self.direction = direction
 		if arc < 0:
 			self.x_c = self.x1 - abs(math.sin(self.theta)) * (self.radius) * direction[1]
 			self.y_c = self.y1 + abs(math.cos(self.theta)) * (self.radius) * direction[0]
@@ -496,16 +503,16 @@ class BeginPointUnit(QGraphicsTextItem):
 	def __init__(self, text, x, y, parent = None):
 		super(BeginPointUnit, self).__init__(text, parent)
 		self.text = text
-		self.x = x
-		self.y = y
+		self.x_ = x
+		self.y_ = y
 		font = self.font()
 		self.setZValue(0.5)
 		self.setDefaultTextColor(QColor(0,0,0))
 		self.setFont(font)
-		self.setPos(self.x - 4, self.y - 4)
+		self.setPos(self.x_ - 4, self.y_ - 4)
 
 	def setPosi(self):
-		self.setPos(self.x - 4, self.y - 4)
+		self.setPos(self.x_ - 4, self.y_ - 4)
 
 	def setText(self, text):
 		QGraphicsTextItem.setText(self, text)

@@ -118,16 +118,6 @@
     <string>赛道元素：</string>
    </property>
   </widget>
-  <widget class="QTextBrowser" name="TextBrowser">
-   <property name="geometry">
-    <rect>
-     <x>700</x>
-     <y>240</y>
-     <width>290</width>
-     <height>330</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_13">
    <property name="geometry">
     <rect>
@@ -398,15 +388,43 @@
   <widget class="QPushButton" name="DeleteButton">
    <property name="geometry">
     <rect>
-     <x>760</x>
-     <y>210</y>
-     <width>75</width>
-     <height>23</height>
+     <x>650</x>
+     <y>380</y>
+     <width>41</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>删除</string>
+    <string>删除
+赛道</string>
    </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>240</y>
+     <width>291</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>291</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="columnCount">
+    <number>5</number>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>80</number>
+   </attribute>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
+   <column/>
   </widget>
  </widget>
  <resources/>

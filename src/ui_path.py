@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'new_design.ui'
 #
-# Created: Wed Mar 11 17:49:36 2015
+# Created: Wed Mar 11 23:32:08 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,9 +54,6 @@ class Ui_Form(object):
         self.label_5 = QtGui.QLabel(Form)
         self.label_5.setGeometry(QtCore.QRect(700, 220, 54, 12))
         self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.TextBrowser = QtGui.QTextBrowser(Form)
-        self.TextBrowser.setGeometry(QtCore.QRect(700, 240, 290, 330))
-        self.TextBrowser.setObjectName(_fromUtf8("TextBrowser"))
         self.label_13 = QtGui.QLabel(Form)
         self.label_13.setGeometry(QtCore.QRect(710, 20, 54, 12))
         self.label_13.setObjectName(_fromUtf8("label_13"))
@@ -152,8 +149,15 @@ class Ui_Form(object):
         self.CloseButton.setGeometry(QtCore.QRect(650, 330, 41, 41))
         self.CloseButton.setObjectName(_fromUtf8("CloseButton"))
         self.DeleteButton = QtGui.QPushButton(Form)
-        self.DeleteButton.setGeometry(QtCore.QRect(760, 210, 75, 23))
+        self.DeleteButton.setGeometry(QtCore.QRect(650, 380, 41, 41))
         self.DeleteButton.setObjectName(_fromUtf8("DeleteButton"))
+        self.tableWidget = QtGui.QTableWidget(Form)
+        self.tableWidget.setGeometry(QtCore.QRect(700, 240, 291, 351))
+        self.tableWidget.setMinimumSize(QtCore.QSize(291, 0))
+        self.tableWidget.setColumnCount(5)
+        self.tableWidget.setObjectName(_fromUtf8("tableWidget"))
+        self.tableWidget.setRowCount(0)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(80)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -191,5 +195,6 @@ class Ui_Form(object):
         self.SaveButton.setText(_translate("Form", "Save", None))
         self.CloseButton.setText(_translate("Form", "自动\n"
 "封闭", None))
-        self.DeleteButton.setText(_translate("Form", "删除", None))
+        self.DeleteButton.setText(_translate("Form", "删除\n"
+"赛道", None))
 

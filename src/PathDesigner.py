@@ -40,6 +40,18 @@ class Path(QWidget, Ui_Form):
 		self.RightAngleButton.setEnabled(False)
 		self.CrossButton.setEnabled(False)
 		self.DeleteButton.setEnabled(False)
+		self.CloseButton.setEnabled(False)
+
+		self.count = 0
+
+		self.table_head = QStringList()
+		self.tableWidget.setColumnCount(4)
+		self.table_head.append(QString.fromUtf8("类型"))
+		self.table_head.append(QString.fromUtf8("起点"))
+		self.table_head.append(QString.fromUtf8("终点/半径"))
+		self.table_head.append(QString.fromUtf8("宽度"))
+		self.tableWidget.setHorizontalHeaderLabels(self.table_head)
+		self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
 	@pyqtSlot()
 	def on_NewButton_clicked(self):
@@ -112,8 +124,11 @@ class Path(QWidget, Ui_Form):
 				self.StateLabel.setText(QString.fromUtf8("请输入转角的方向(0顺,1逆):"))
 			elif self.state == 2:
 				self.StateLabel.setText(QString.fromUtf8("请输入赛道宽度:"))
+		elif self.tool == 7:
+			self.StateLabel.setText(QString.fromUtf8("请输入您想删除的赛道编号:"))
 		else:
 			self.StateLabel.setText("")
+
 
 	def set_label(self, pos):
 		self.CoordinateLabel.setText("(%d,%d)" %(pos.x(), pos.y()))
@@ -183,7 +198,7 @@ class Path(QWidget, Ui_Form):
 						return
 				else:
 					if command > 0:
-						self.BeginPoint_list[0].x = command
+						self.BeginPoint_list[0].x_ = command
 						self.state = 1
 						self.Information()
 					else:
@@ -200,7 +215,7 @@ class Path(QWidget, Ui_Form):
 						return
 				else:
 					if command > 0:
-						self.BeginPoint_list[0].y = command
+						self.BeginPoint_list[0].y_ = command
 						self.BeginPoint_list[0].setPosi()
 						self.state = 2
 						self.Information()
@@ -219,6 +234,7 @@ class Path(QWidget, Ui_Form):
 				else:
 					if command > 0:
 						self.commands["x2"] = command
+						print "I get command:",command
 						self.state = 3
 						self.Information()
 					else:
@@ -227,6 +243,7 @@ class Path(QWidget, Ui_Form):
 			elif self.state == 3:
 				if command > 0:
 					self.commands["y2"] = command
+					print "I get command:",command
 					self.state = 4
 					self.Information()
 				else:
@@ -236,12 +253,12 @@ class Path(QWidget, Ui_Form):
 				if command >= 45:
 					self.commands["width1"] = command
 					if self.commands["type"]:
-						graphs = CenterLineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["length"])
+						graphs = CenterLineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["length"])
 					else:
 						if not self.last_slope:
-							graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["width1"], self.commands["width2"], None, self.commands["x2"], self.commands["y2"], self.commands["length"], None)
+							graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["width1"], self.commands["width2"], None, self.commands["x2"], self.commands["y2"], self.commands["length"], None)
 						else:
-							graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], self.commands["length"], self.commands["last_slope"][self.commands["beginpoint"]][0])
+							graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], self.commands["length"], self.commands["last_slope"][self.commands["beginpoint"]][0])
 					for points in graphs.getBeginPoint():
 						if points[0] < 0 or points[1] < 0:
 							self.StateLabel.setText(QString.fromUtf8("超出边界，绘制失败"))
@@ -253,7 +270,7 @@ class Path(QWidget, Ui_Form):
 						has = False
 						self.scene1.removeItem(self.BeginPoint_list[self.commands["beginpoint"]])
 						for unit in self.BeginPoint_list.values():
-							if unit.x == graphs.getBeginPoint()[0][0] and unit.y == graphs.getBeginPoint()[0][1]:
+							if unit.x_ == graphs.getBeginPoint()[0][0] and unit.y_ == graphs.getBeginPoint()[0][1]:
 								has = True
 								for k in self.BeginPoint_list.keys():
 									if self.BeginPoint_list[k] == unit:
@@ -279,8 +296,14 @@ class Path(QWidget, Ui_Form):
 						self.RightAngleButton.setEnabled(True)
 						self.CrossButton.setEnabled(True)
 						self.DeleteButton.setEnabled(True)
+						self.CloseButton.setEnabled(True)
 					self.element_list.append(graphs)
 					self.scene1.addItem(graphs)
+					self.tableWidget.insertRow(self.tableWidget.rowCount())
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(QString.fromUtf8("直线赛道")))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 2, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(graphs.getBeginPoint()[0][0], graphs.getBeginPoint()[0][1]))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 3, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["width1"])))
 					self.LineButton.setChecked(False)
 					self.tool = -1
 				else:
@@ -321,9 +344,9 @@ class Path(QWidget, Ui_Form):
 				if command >= 45:
 					self.commands["width1"] = command
 					if self.commands["type"]:
-						graphs = CenterArcUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["arc"], self.commands["radius"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
+						graphs = CenterArcUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["arc"], self.commands["radius"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
 					else:
-						graphs = ArcUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["arc"], self.commands["radius"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
+						graphs = ArcUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["arc"], self.commands["radius"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
 					for points in graphs.getBeginPoint():
 						if points[0] < 0 or points[1] < 0:
 							self.StateLabel.setText(QString.fromUtf8("超出边界，绘制失败"))
@@ -335,7 +358,7 @@ class Path(QWidget, Ui_Form):
 						has = False
 						self.scene1.removeItem(self.BeginPoint_list[self.commands["beginpoint"]])
 						for unit in self.BeginPoint_list.values():
-							if unit.x == graphs.getBeginPoint()[0][0] and unit.y == graphs.getBeginPoint()[0][1]:
+							if unit.x_ == graphs.getBeginPoint()[0][0] and unit.y_ == graphs.getBeginPoint()[0][1]:
 								has = True
 								for k in self.BeginPoint_list.keys():
 									if self.BeginPoint_list[k] == unit:
@@ -359,6 +382,11 @@ class Path(QWidget, Ui_Form):
 								self.last_slope[0] = (graphs.getSlope(), graphs.getDirection())
 								self.last_slope[i] = (graphs.getSlope(), graphs.getDirection())
 								break
+					self.tableWidget.insertRow(self.tableWidget.rowCount())
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(QString.fromUtf8("圆弧赛道")))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 2, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["radius"])))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 3, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["width1"])))
 					self.element_list.append(graphs)
 					self.scene1.addItem(graphs)
 					self.ArcButton.setChecked(False)
@@ -379,7 +407,7 @@ class Path(QWidget, Ui_Form):
 			elif self.state == 1:
 				if command >= 45:
 					self.commands["width1"] = command
-					graphs = CrossUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
+					graphs = CrossUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1])
 					for points in graphs.getBeginPoint():
 						if points[0] < 0 or points[1] < 0:
 							self.StateLabel.setText(QString.fromUtf8("超出边界，绘制失败"))
@@ -392,7 +420,7 @@ class Path(QWidget, Ui_Form):
 					del self.BeginPoint_list[self.commands["beginpoint"]]
 					for index in range(len(graphs.getBeginPoint())):
 						for unit in self.BeginPoint_list.values():
-							if unit.x == graphs.getBeginPoint()[index][0] and unit.y == graphs.getBeginPoint()[index][1]:
+							if unit.x_ == graphs.getBeginPoint()[index][0] and unit.y_ == graphs.getBeginPoint()[index][1]:
 								has[index] = True
 								for k in self.BeginPoint_list.keys():
 									if self.BeginPoint_list[k] == unit:
@@ -406,6 +434,10 @@ class Path(QWidget, Ui_Form):
 									self.scene1.addItem(bg)
 									self.last_slope[i] = (graphs.getSlope()[index], graphs.getDirection()[index])
 									break
+					self.tableWidget.insertRow(self.tableWidget.rowCount())
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(QString.fromUtf8("十字交叉")))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 3, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["width1"])))
 					self.element_list.append(graphs)
 					self.scene1.addItem(graphs)
 					self.CrossButton.setChecked(False)
@@ -432,13 +464,13 @@ class Path(QWidget, Ui_Form):
 			elif self.state == 2:
 				if command >= 45:
 					self.commands["width1"] = command
-					graphs_bar = BarrierUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["position"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["last_slope"][self.commands["beginpoint"]][1])
+					graphs_bar = BarrierUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["position"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["last_slope"][self.commands["beginpoint"]][1])
 					print "set rotation: ", self.commands["last_slope"][self.commands["beginpoint"]][0]*180/PI
 					graphs_bar.setTransformOriginPoint(graphs_bar.getOrigin())
 					graphs_bar.setRotation(self.commands["last_slope"][self.commands["beginpoint"]][0]*180/PI)
 					self.scene1.addItem(graphs_bar)
 					self.element_list.append(graphs_bar)
-					graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], 30, self.commands["last_slope"][self.commands["beginpoint"]][0])
+					graphs = LineUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["x2"], self.commands["y2"], 30, self.commands["last_slope"][self.commands["beginpoint"]][0])
 					for points in graphs.getBeginPoint():
 						if points[0] < 0 or points[1] < 0:
 							self.StateLabel.setText(QString.fromUtf8("超出边界，绘制失败"))
@@ -449,7 +481,7 @@ class Path(QWidget, Ui_Form):
 					has = False
 					self.scene1.removeItem(self.BeginPoint_list[self.commands["beginpoint"]])
 					for unit in self.BeginPoint_list.values():
-						if abs(unit.x - graphs.getBeginPoint()[0][0]) <= 1 and abs(unit.y - graphs.getBeginPoint()[0][1]) <= 1:
+						if abs(unit.x_ - graphs.getBeginPoint()[0][0]) <= 1 and abs(unit.y_ - graphs.getBeginPoint()[0][1]) <= 1:
 							has = True
 							for k in self.BeginPoint_list.keys():
 								if self.BeginPoint_list[k] == unit:
@@ -461,6 +493,11 @@ class Path(QWidget, Ui_Form):
 						self.BeginPoint_list[self.commands["beginpoint"]] = bg
 						self.scene1.addItem(bg)
 						self.last_slope[self.commands["beginpoint"]] = (graphs.getSlope(), graphs.getDirection())
+					self.tableWidget.insertRow(self.tableWidget.rowCount())
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(QString.fromUtf8("障碍")))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 2, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(graphs.getBeginPoint()[0][0], graphs.getBeginPoint()[0][1]))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 3, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["width1"])))	
 					self.element_list.append(graphs)
 					self.scene1.addItem(graphs)
 					self.BarrierButton.setChecked(False)
@@ -502,7 +539,7 @@ class Path(QWidget, Ui_Form):
 			elif self.state == 2:
 				if command >= 45:
 					self.commands["width1"] = command
-					graphs = RightAngleUnit(self.BeginPoint_list[self.commands["beginpoint"]].x, self.BeginPoint_list[self.commands["beginpoint"]].y, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["position"])
+					graphs = RightAngleUnit(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_, self.commands["width1"], self.commands["width2"], self.commands["last_slope"][self.commands["beginpoint"]][0], self.commands["last_slope"][self.commands["beginpoint"]][1], self.commands["position"])
 					for points in graphs.getBeginPoint():
 						if points[0] < 0 or points[1] < 0:
 							self.StateLabel.setText(QString.fromUtf8("超出边界，绘制失败"))
@@ -524,7 +561,7 @@ class Path(QWidget, Ui_Form):
 					has = False
 					self.scene1.removeItem(self.BeginPoint_list[self.commands["beginpoint"]])
 					for unit in self.BeginPoint_list.values():
-						if unit.x == graphs.getBeginPoint()[0][0] and unit.y == graphs.getBeginPoint()[0][1]:
+						if unit.x_ == graphs.getBeginPoint()[0][0] and unit.y_ == graphs.getBeginPoint()[0][1]:
 							has = True
 							for k in self.BeginPoint_list.keys():
 								if self.BeginPoint_list[k] == unit:
@@ -536,6 +573,11 @@ class Path(QWidget, Ui_Form):
 						self.BeginPoint_list[self.commands["beginpoint"]] = bg
 						self.scene1.addItem(bg)
 						self.last_slope[self.commands["beginpoint"]] = (graphs.getSlope(), graphs.getDirection())
+					self.tableWidget.insertRow(self.tableWidget.rowCount())
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 0, QTableWidgetItem(QString.fromUtf8("直角弯道")))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 1, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(self.BeginPoint_list[self.commands["beginpoint"]].x_, self.BeginPoint_list[self.commands["beginpoint"]].y_))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 2, QTableWidgetItem(QString.fromUtf8("(%d, %d)" %(graphs.getBeginPoint()[0][0], graphs.getBeginPoint()[0][1]))))
+					self.tableWidget.setItem(self.tableWidget.rowCount() - 1, 3, QTableWidgetItem(QString.fromUtf8("%d" %self.commands["width1"])))
 					self.scene1.addItem(graphs)
 					self.element_list.append(graphs)
 					self.RightAngleButton.setChecked(False)
@@ -543,9 +585,62 @@ class Path(QWidget, Ui_Form):
 				else:
 					self.StateLabel.setText(QString.fromUtf8("输入错误，请输入大于等于45的数字"))
 					return
+		elif self.tool == 7:
+			if command in range(1, len(self.element_list) + 1):
+				if len(self.element_list) > 1:
+					for i in range(100):
+						if i not in self.BeginPoint_list.keys():
+							new_bgs = BeginPointUnit(QString("%d" %i), self.element_list[command - 1].x1, self.element_list[command - 1].y1)
+							self.BeginPoint_list[i] = new_bgs
+							self.scene1.addItem(new_bgs)
+							self.last_slope[i] = (self.element_list[command - 1].theta, self.element_list[command - 1].direction)
+					last_point = self.element_list[command - 1].getBeginPoint()
+					for lp in last_point:
+						used = False
+						for bg in self.BeginPoint_list.values():
+							if bg.x_ == lp[0] and bg.y_ == lp[1]:
+								used = True
+								self.scene1.removeItem(bg)
+								for key_ in self.BeginPoint_list.keys():
+									if self.BeginPoint_list[key_] == bg:
+										del self.BeginPoint_list[key_]
+										print "after delete:"
+										if len(self.BeginPoint_list.keys()) == 0:
+											self.last_slope = None
+										break
+								break
+						if not used:
+							for i in range(100):
+								if i not in self.BeginPoint_list.keys():
+									new_bg = BeginPointUnit("%d" %i, graphs.getBeginPoint()[index][0], graphs.getBeginPoint()[index][1])
+									self.BeginPoint_list[i] = new_bg
+									self.scene1.addItem(new_bg)
+									if len(last_point) == 1:
+										self.last_slope[i] = (self.element_list[command - 1].getSlope(), self.element_list[command - 1].getDirection())
+									else:
+										self.last_slope[i] = (self.element_list[command - 1].getSlope()[last_point.index(lp)], self.element_list[command - 1].getDirection()[last_point.index(lp)])
+
+				else:
+					for bg in self.BeginPoint_list.values():
+						self.scene1.removeItem(bg)
+					self.BeginPoint_list = {}
+					bg = BeginPointUnit("0", 0, 0)
+					self.BeginPoint_list[0] = bg
+					self.last_slope = None
+				self.tableWidget.removeRow(command - 1)
+				self.scene1.removeItem(self.element_list[command - 1])
+				del self.element_list[command - 1]
+			else:
+				self.StateLabel.setText(QString.fromUtf8("输入错误"))
 
 		else:
 			self.StateLabel.setText("")
+
+	@pyqtSlot()
+	def on_DeleteButton_clicked(self):
+		self.tool = 7
+		self.state = 0
+		self.Information()
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
