@@ -33,10 +33,20 @@ class Path(QWidget, Ui_Form):
 		self.connect(self.CenterWidget, SIGNAL("Coordinate"), self.set_label)
 		self.connect(self.CenterWidget, SIGNAL("zoomed"), self.zoom_text)
 
+		self.LineButton.setEnabled(False)
+		self.ArcButton.setEnabled(False)
+		self.BarrierButton.setEnabled(False)
+		self.RampButton.setEnabled(False)
+		self.RightAngleButton.setEnabled(False)
+		self.CrossButton.setEnabled(False)
+		self.DeleteButton.setEnabled(False)
+
 	@pyqtSlot()
 	def on_NewButton_clicked(self):
 		print "clicked start"
 		self.CenterWidget.started = True
+		self.LineButton.setEnabled(True)
+		self.StateLabel.setText(QString.fromUtf8("请创建一条直线赛道作为开始"))
 
 	def zoom_text(self, zoom_f):
 		print "use zoom:",zoom_f
@@ -263,6 +273,12 @@ class Path(QWidget, Ui_Form):
 						self.last_slope = [0 for x in range(100)]
 						self.last_slope[0] = (graphs.getSlope(), [-graphs.getDirection()[0], -graphs.getDirection()[1]])
 						self.last_slope[1] = (graphs.getSlope(), graphs.getDirection())
+						self.ArcButton.setEnabled(True)
+						self.BarrierButton.setEnabled(True)
+						self.RampButton.setEnabled(True)
+						self.RightAngleButton.setEnabled(True)
+						self.CrossButton.setEnabled(True)
+						self.DeleteButton.setEnabled(True)
 					self.element_list.append(graphs)
 					self.scene1.addItem(graphs)
 					self.LineButton.setChecked(False)

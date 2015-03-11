@@ -291,7 +291,7 @@ class RightAngleUnit(QGraphicsObject):
 		self.width1 = width1
 		self.width2 = width2
 		print "get message:",self.theta, direction, side, width1, width2, x1, y1
-		if theta >= 0:
+		if theta > 0:
 			self.x_lu = self.x1 + (math.sin(theta)) * self.width1/2 * self.direction[1]
 			self.y_lu = self.y1 - (math.cos(theta)) * self.width1/2 * self.direction[1]
 			self.x_ld = self.x1 - (math.sin(theta)) * self.width1/2 * self.direction[1]
@@ -446,14 +446,14 @@ class CrossUnit(QGraphicsObject):
 		self.theta = theta
 		self.direction = direction
 		print width1/2, theta
-		self.x_lu = x1 - width1/2 * math.sin(theta)
-		self.point1_x = self.x_lu + width1 * math.cos(theta)
+		self.x_lu = x1 - width1/2 * abs(math.sin(theta))
+		self.point1_x = self.x_lu + width1 * abs(math.cos(theta)) * self.direction[0]
 		self.y_lu = y1 + width1/2 * math.cos(theta)
-		self.point1_y = self.y_lu + width1 * math.sin(theta)
+		self.point1_y = self.y_lu + width1 * abs(math.sin(theta)) * self.direction[1]
 		self.x_ld = x1 + width1/2 * math.sin(theta)
-		self.point2_x = self.x_ld + width1 * math.cos(theta)
+		self.point2_x = self.x_ld + width1 * abs(math.cos(theta)) * self.direction[0]
 		self.y_ld = y1 - width1/2 * math.cos(theta)
-		self.point2_y = self.y_ld + width1 * math.sin(theta)
+		self.point2_y = self.y_ld + width1 * abs(math.sin(theta)) * self.direction[1]
 		print self.x_lu, " ", self.y_lu, " ", self.x_ld, " ", self.y_ld, " ", self.point1_x, " ", self.point1_y, " ", self.point2_x, " ", self.point2_y
 
 	def paint(self, painter, option, widget = None):
