@@ -6,3 +6,5 @@ src/mysetup.py
 
 # Package
 src/build
+src/dist
+src/PathDesigner.zip
