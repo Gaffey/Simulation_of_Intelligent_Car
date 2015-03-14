@@ -195,9 +195,6 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLineEdit" name="TypeEdit"/>
-    </item>
     <item row="4" column="1">
      <widget class="QLineEdit" name="FrictionEdit"/>
     </item>
@@ -213,6 +210,20 @@
       <property name="text">
        <string>场地总长度：</string>
       </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="comboBox">
+      <item>
+       <property name="text">
+        <string>光电&amp;CCD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>电磁</string>
+       </property>
+      </item>
      </widget>
     </item>
    </layout>
@@ -427,6 +438,28 @@
    <column/>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>TLengthEdit</tabstop>
+  <tabstop>TWidthEdit</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>MinEdit</tabstop>
+  <tabstop>MaxEdit</tabstop>
+  <tabstop>FrictionEdit</tabstop>
+  <tabstop>LightEdit</tabstop>
+  <tabstop>NewButton</tabstop>
+  <tabstop>OpenButton</tabstop>
+  <tabstop>SaveButton</tabstop>
+  <tabstop>LineButton</tabstop>
+  <tabstop>InputEdit</tabstop>
+  <tabstop>ArcButton</tabstop>
+  <tabstop>CrossButton</tabstop>
+  <tabstop>BarrierButton</tabstop>
+  <tabstop>RampButton</tabstop>
+  <tabstop>RightAngleButton</tabstop>
+  <tabstop>CloseButton</tabstop>
+  <tabstop>DeleteButton</tabstop>
+  <tabstop>tableWidget</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

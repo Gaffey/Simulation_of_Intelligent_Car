@@ -8,7 +8,7 @@ import math
 PI = 3.1415926535898
 
 class LineUnit(QGraphicsObject):
-	def __init__(self, x1, y1, width1, width2, direction, x2 = None, y2 = None, length = None, theta = None, parent = None):
+	def __init__(self, x1, y1, width1, width2, direction, x2 = None, y2 = None, length = None, theta = None, line1 = None, line2 = None, parent = None):
 		super(LineUnit, self).__init__(parent)
 		self.x1 = x1
 		self.y1 = y1
@@ -34,13 +34,36 @@ class LineUnit(QGraphicsObject):
 		self.y_ld = self.y1 - math.cos(theta) * self.width1/2
 		self.x_rd = self.x2 + math.sin(theta) * self.width1/2
 		self.y_rd = self.y2 - math.cos(theta) * self.width1/2
+		if line1:
+			self.x3 = self.x1 + abs(math.cos(theta)) * line1 * direction[0]
+			self.y3 = self.y1 + abs(math.sin(theta)) * line1 * direction[1]
+			self.x4 = self.x3 + abs(math.cos(theta)) * line2 * direction[0]
+			self.y4 = self.y3 + abs(math.sin(theta)) * line2 * direction[1]
+			self.x_ru1 = self.x3 - math.sin(theta) * self.width1/2
+			self.y_ru1 = self.y3 + math.cos(theta) * self.width1/2
+			self.x_rd1 = self.x3 + math.sin(theta) * self.width1/2
+			self.y_rd1 = self.y3 - math.cos(theta) * self.width1/2
+			self.x_ru2 = self.x4 - math.sin(theta) * self.width1/2
+			self.y_ru2 = self.y4 + math.cos(theta) * self.width1/2
+			self.x_rd2 = self.x4 + math.sin(theta) * self.width1/2
+			self.y_rd2 = self.y4 - math.cos(theta) * self.width1/2
+	def getInLine(self):
+		return [(self.x_lu, self.y_lu), (self.x_ld, self.y_ld)]
+
+	def getOutLine(self):
+		return [(self.x_ru, self.y_ru), (self.x_rd, self.y_rd)]
+
+	def getMid1(self):
+		return [(self.x_ru1, self.y_ru1), (self.x_rd1, self.y_rd1)]
+
+	def getMid2(self):
+		return [(self.x_ru2, self.y_ru2), (self.x_rd2, self.y_rd2)]
 
 	def boundingRect(self):
 		return QRectF(0,0,1000,1000)
 
 	def getSlope(self):
-		print "return slope:",(self.y2 - self.y1)/(self.x2 - self.x1)
-		return math.atan2((self.y2 - self.y1),(self.x2 - self.x1))%PI
+		return math.atan2((self.y2 - self.y1),(self.x2 - self.x1))
 
 	def getBeginPoint(self):
 		return [((self.x_ru + self.x_rd)/2, (self.y_ru + self.y_rd)/2)]
@@ -82,7 +105,7 @@ class CenterLineUnit(QGraphicsObject):
 		return QRectF(0,0,1000,1000)
 
 	def getSlope(self):
-		return math.atan2(float(self.y2 - self.y1),float(self.x2 - self.x1))%PI
+		return math.atan2(float(self.y2 - self.y1),float(self.x2 - self.x1))
 
 	def getBeginPoint(self):
 		return [(self.x2, self.y2)]
@@ -384,13 +407,14 @@ class RightAngleUnit(QGraphicsObject):
 		painter.restore()
 
 class BlackAreaUnit(QGraphicsObject):
-	def __init__(self, pos, width, theta, side, direction, parent = None):
+	def __init__(self, pos, width, theta, side, direction, id_, parent = None):
 		super(BlackAreaUnit, self).__init__(parent)
 		self.pos = pos
 		self.width = width
 		self.theta = theta
 		self.side = side
 		self.direction = direction
+		self.id = id_
 		print "in black area:",self.pos
 
 	def boundingRect(self):
@@ -412,8 +436,32 @@ class BlackAreaUnit(QGraphicsObject):
 		painter.drawRect(self.pos[0], self.pos[1], self.width, 10)
 		painter.restore()
 
+class RampUnit(QGraphicsObject):
+	def __init__(self, x1, x2, y1, y2, id_, parent = None):
+		super(RampUnit, self).__init__(parent)
+		self.x1 = x1
+		self.y1 = y1
+		self.x2 = x2
+		self.y2 = y2
+		self.id = id_
+
+	def paint(self, painter, option, widget = None):
+		painter.save()
+		pen = QPen()
+		pen.setWidth(1)
+		pen.setCapStyle(Qt.RoundCap)
+		pen.setJoinStyle(Qt.RoundJoin)
+		pen.setColor(QColor(0, 0, 0))
+		painter.setPen(pen)
+		painter.setBrush(Qt.NoBrush)
+		painter.drawLine(self.x1, self.y1, self.x2, self.y2)
+		painter.restore()
+
+	def boundingRect(self):
+		return QRectF(0,0,1000,1000)
+
 class BarrierUnit(QGraphicsObject):
-	def __init__(self, x1, y1, position, theta, direction, parent = None):
+	def __init__(self, x1, y1, position, theta, direction, id_, parent = None):
 		super(BarrierUnit, self).__init__(parent)
 		if not position:
 			self.x = x1 - 5 * math.sin(theta)
@@ -425,6 +473,7 @@ class BarrierUnit(QGraphicsObject):
 			self.x -= 30 * math.cos(theta)
 			self.y -= 30 * math.sin(theta)
 		self.setZValue(0.9)
+		self.id = id_
 
 	def boundingRect(self):
 		return QRectF(0,0,1000,1000)
@@ -500,7 +549,7 @@ class CrossUnit(QGraphicsObject):
 				return [[-1,-1], [1,1], self.direction]
 
 class BeginPointUnit(QGraphicsTextItem):
-	def __init__(self, text, x, y, parent = None):
+	def __init__(self, text, x, y, id_ = None, parent = None):
 		super(BeginPointUnit, self).__init__(text, parent)
 		self.text = text
 		self.x_ = x
@@ -510,6 +559,8 @@ class BeginPointUnit(QGraphicsTextItem):
 		self.setDefaultTextColor(QColor(0,0,0))
 		self.setFont(font)
 		self.setPos(self.x_ - 4, self.y_ - 4)
+		if id_:
+			self.id = id_
 
 	def setPosi(self):
 		self.setPos(self.x_ - 4, self.y_ - 4)

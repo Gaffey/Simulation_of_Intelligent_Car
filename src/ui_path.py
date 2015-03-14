@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'new_design.ui'
 #
-# Created: Wed Mar 11 23:32:08 2015
+# Created: Sat Mar 14 19:51:21 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,9 +96,6 @@ class Ui_Form(object):
         self.label_14 = QtGui.QLabel(self.layoutWidget)
         self.label_14.setObjectName(_fromUtf8("label_14"))
         self.gridLayout_2.addWidget(self.label_14, 4, 0, 1, 1)
-        self.TypeEdit = QtGui.QLineEdit(self.layoutWidget)
-        self.TypeEdit.setObjectName(_fromUtf8("TypeEdit"))
-        self.gridLayout_2.addWidget(self.TypeEdit, 2, 1, 1, 1)
         self.FrictionEdit = QtGui.QLineEdit(self.layoutWidget)
         self.FrictionEdit.setObjectName(_fromUtf8("FrictionEdit"))
         self.gridLayout_2.addWidget(self.FrictionEdit, 4, 1, 1, 1)
@@ -108,6 +105,11 @@ class Ui_Form(object):
         self.label_16 = QtGui.QLabel(self.layoutWidget)
         self.label_16.setObjectName(_fromUtf8("label_16"))
         self.gridLayout_2.addWidget(self.label_16, 0, 0, 1, 1)
+        self.comboBox = QtGui.QComboBox(self.layoutWidget)
+        self.comboBox.setObjectName(_fromUtf8("comboBox"))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.comboBox.addItem(_fromUtf8(""))
+        self.gridLayout_2.addWidget(self.comboBox, 2, 1, 1, 1)
         self.label_2 = QtGui.QLabel(Form)
         self.label_2.setGeometry(QtCore.QRect(100, 570, 54, 21))
         self.label_2.setObjectName(_fromUtf8("label_2"))
@@ -161,6 +163,25 @@ class Ui_Form(object):
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
+        Form.setTabOrder(self.TLengthEdit, self.TWidthEdit)
+        Form.setTabOrder(self.TWidthEdit, self.comboBox)
+        Form.setTabOrder(self.comboBox, self.MinEdit)
+        Form.setTabOrder(self.MinEdit, self.MaxEdit)
+        Form.setTabOrder(self.MaxEdit, self.FrictionEdit)
+        Form.setTabOrder(self.FrictionEdit, self.LightEdit)
+        Form.setTabOrder(self.LightEdit, self.NewButton)
+        Form.setTabOrder(self.NewButton, self.OpenButton)
+        Form.setTabOrder(self.OpenButton, self.SaveButton)
+        Form.setTabOrder(self.SaveButton, self.LineButton)
+        Form.setTabOrder(self.LineButton, self.InputEdit)
+        Form.setTabOrder(self.InputEdit, self.ArcButton)
+        Form.setTabOrder(self.ArcButton, self.CrossButton)
+        Form.setTabOrder(self.CrossButton, self.BarrierButton)
+        Form.setTabOrder(self.BarrierButton, self.RampButton)
+        Form.setTabOrder(self.RampButton, self.RightAngleButton)
+        Form.setTabOrder(self.RightAngleButton, self.CloseButton)
+        Form.setTabOrder(self.CloseButton, self.DeleteButton)
+        Form.setTabOrder(self.DeleteButton, self.tableWidget)
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(_translate("Form", "Form", None))
@@ -182,6 +203,8 @@ class Ui_Form(object):
         self.label_14.setText(_translate("Form", "摩擦系数：", None))
         self.label_15.setText(_translate("Form", "环境光强：", None))
         self.label_16.setText(_translate("Form", "场地总长度：", None))
+        self.comboBox.setItemText(0, _translate("Form", "光电&CCD", None))
+        self.comboBox.setItemText(1, _translate("Form", "电磁", None))
         self.label_2.setText(_translate("Form", "状态提示：", None))
         self.RampButton.setText(_translate("Form", "坡道", None))
         self.RightAngleButton.setText(_translate("Form", "直角\n"

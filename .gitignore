@@ -1,0 +1,8 @@
+# Python bytecode
+src/*.pyc
+
+# build object
+src/mysetup.py
+
+# Package
+src/build
