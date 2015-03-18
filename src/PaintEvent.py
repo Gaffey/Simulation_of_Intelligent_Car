@@ -34,6 +34,7 @@ class LineUnit(QGraphicsObject):
 		self.y_ld = self.y1 - math.cos(theta) * self.width1/2
 		self.x_rd = self.x2 + math.sin(theta) * self.width1/2
 		self.y_rd = self.y2 - math.cos(theta) * self.width1/2
+		print self.x_lu, self.y_lu, self.x_ld, self.y_ld, self.x_ru, self.y_ru, self.x_rd, self.y_rd
 		if line1:
 			self.x3 = self.x1 + abs(math.cos(theta)) * line1 * direction[0]
 			self.y3 = self.y1 + abs(math.sin(theta)) * line1 * direction[1]
@@ -139,7 +140,7 @@ class ArcUnit(QGraphicsObject):
 		if arc < 0:
 			self.x_c = self.x1 - abs(math.sin(self.theta)) * (self.radius) * direction[1]
 			self.y_c = self.y1 + abs(math.cos(self.theta)) * (self.radius) * direction[0]
-			if abs(self.theta - PI/2) < 0.05:
+			if abs(self.theta - PI/2) < 0.05 or abs(self.theta + PI/2) < 0.05:
 				if self.x_c > self.x1:
 					self.start = -180*16
 				else:
@@ -232,7 +233,7 @@ class CenterArcUnit(QGraphicsObject):
 		if arc < 0:
 			self.x_c = self.x1 - abs(math.sin(self.theta)) * (self.radius) * direction[1]
 			self.y_c = self.y1 + abs(math.cos(self.theta)) * (self.radius) * direction[0]
-			if abs(self.theta - PI/2) < 0.05:
+			if abs(self.theta - PI/2) < 0.05 or abs(sel.theta + PI/2) < 0.05:
 				if self.x_c > self.x1:
 					self.start = -180*16
 				else:
@@ -309,6 +310,151 @@ class CenterArcUnit(QGraphicsObject):
 		painter.setPen(pen)
 		painter.drawArc(QRectF(self.x_c - self.radius, self.y_c - self.radius, 2*(self.radius), 2*(self.radius)), self.start, self.span)
 		painter.restore()
+
+class AngleUnit(QGraphicsObject):
+	def __init__(self, x1, y1, width1, width2, theta, direction, side, angle, parent = None):
+		super(AngleUnit, self).__init__(parent)
+		self.x1 = x1
+		self.y1 = y1
+		self.width1 = width1
+		self.width2 = width2
+		self.theta = theta
+		self.direction = direction
+		print self.direction
+		self.side = side
+		self.angle = angle
+		if theta > 0:
+			self.x_ld = self.x1 + (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_ld = self.y1 - (math.cos(theta)) * self.width1/2 * self.direction[1]
+			self.x_lu = self.x1 - (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_lu = self.y1 + (math.cos(theta)) * self.width1/2 * self.direction[1]
+		else:
+			self.x_ld = self.x1 - (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_ld = self.y1 + (math.cos(theta)) * self.width1/2 * self.direction[1]
+			self.x_lu = self.x1 + (math.sin(theta)) * self.width1/2 * self.direction[1]
+			self.y_lu = self.y1 - (math.cos(theta)) * self.width1/2 * self.direction[1]
+		'''
+		self.x_lu = self.x1 - math.sin(theta) * self.width1/2 * direction[1]
+		self.y_lu = self.y1 + math.cos(theta) * self.width1/2 * direction[0]
+		#self.x_ru = self.x2 - math.sin(theta) * self.width1/2
+		#self.y_ru = self.y2 + math.cos(theta) * self.width1/2
+		self.x_ld = self.x1 + math.sin(theta) * self.width1/2 * direction[1]
+		self.y_ld = self.y1 - math.cos(theta) * self.width1/2 * direction[0]
+		#self.x_rd = self.x2 + math.sin(theta) * self.width1/2
+		#self.y_rd = self.y2 - math.cos(theta) * self.width1/2
+		'''
+		angle_length = self.width1 * math.tan((PI - angle*PI/180.0)/2.0)
+		if self.side:
+			self.xm = self.x_lu + abs(math.cos(theta)) * angle_length * direction[0]
+			self.ym = self.y_lu + abs(math.sin(theta)) * angle_length * direction[1]
+			self.new_theta = self.theta + angle*PI/180
+			while self.new_theta > PI/2.0:
+				self.new_theta -= PI
+			while self.new_theta <= -PI/2.0:
+				self.new_theta += PI
+			print "new_theta = ", self.new_theta
+			self.compare_1_x = (self.x_ld + self.xm)/2.0
+			self.compare_1_y = (self.y_ld + self.ym)/2.0
+		else:
+			self.xm = self.x_ld + abs(math.cos(theta)) * angle_length * direction[0]
+			self.ym = self.y_ld + abs(math.sin(theta)) * angle_length * direction[1]
+			self.new_theta = self.theta - angle*PI/180
+			while self.new_theta > PI/2.0:
+				self.new_theta -= PI
+			while self.new_theta <= -PI/2.0:
+				self.new_theta += PI
+			print "new_theta = ", self.new_theta
+			self.compare_1_x = (self.x_lu + self.xm)/2.0
+			self.compare_1_y = (self.y_lu + self.ym)/2.0
+		'''
+		if direction[0] == 1:
+			tmp_theta = theta
+		else:
+			if abs(theta) != 0:
+				tmp_theta = theta - theta/abs(theta) * PI
+			else:
+				tmp_theta = PI
+		new_tmp_theta = - tmp_theta + angle * PI / 180 * 2 * (side - 0.5)
+		while new_tmp_theta > PI:
+			new_tmp_theta -= 2 * PI
+		while new_tmp_theta < -PI:
+			new_tmp_theta += 2 * PI
+		'''
+		if side:
+			if abs(theta) <= 0.05:
+				new_direct = [direction[0], -direction[0]]
+			elif abs(theta - PI/2) <= 0.05 or abs(theta + PI/2) < 0.05:
+				if direction[1] == -1:
+					new_direct = [-1, -1]
+				else:
+					new_direct = [1, 1]
+			elif direction[0] == direction[1]:
+				if abs(self.theta) + angle > PI:
+					new_direct = direction
+				else:
+					new_direct = [direction[0], -direction[1]]
+			else:
+				if PI/2.0 + self.theta + angle > PI:
+					new_direct = direction
+				else:
+					new_direct = [-direction[0], direction[1]]
+		else:
+			if abs(theta) <= 0.05:
+				new_direct = [direction[0], direction[0]]
+			elif abs(theta - PI/2) <= 0.05 or abs(theta + PI/2) < 0.05:
+				if direction[1] == -1:
+					new_direct = [1, -1]
+				else:
+					new_direct = [-1, 1]
+			elif direction[0] == direction[1]:
+				if PI/2.0 - abs(self.theta) + angle > PI:
+					new_direct = direction
+				else:
+					new_direct = [-direction[0], direction[1]]
+			else:
+				if - self.theta + angle > PI:
+					new_direct = direction
+				else:
+					new_direct = [direction[0], -direction[1]]
+		print "new_direct:",new_direct
+		self.xe = self.xm + abs(math.cos(self.new_theta)) * angle_length * new_direct[0]
+		self.ye = self.ym + abs(math.sin(self.new_theta)) * angle_length * new_direct[1]
+		print "m:(",self.xm,self.ym,") e:(",self.xe,self.ye,")"
+		if self.side:
+			self.compare_2_x = (self.x_ld + self.xe)/2.0
+			self.compare_2_y = (self.y_ld + self.ye)/2.0
+		else:
+			self.compare_2_x = (self.x_lu + self.xe)/2.0
+			self.compare_2_y = (self.y_lu + self.ye)/2.0
+		print "bg pt:(",self.compare_2_x,self.compare_2_y,")"
+
+	def getSlope(self):
+		return math.atan2(self.compare_2_y - self.compare_1_y, self.compare_2_x - self.compare_1_x)
+
+	def getBeginPoint(self):
+		return[(self.compare_2_x, self.compare_2_y)]
+
+	def getDirection(self):
+		return [1 if self.compare_2_x > self.compare_1_x else -1, 1 if self.compare_2_y > self.compare_1_y else -1]
+
+	def boundingRect(self):
+		return QRectF(0,0,1000,1000)
+
+	def paint(self, painter, option, widget = None):
+		painter.save()
+		pen = QPen()
+		pen.setWidth(self.width2)
+		pen.setCapStyle(Qt.RoundCap)
+		pen.setJoinStyle(Qt.RoundJoin)
+		pen.setColor(QColor(0, 0, 0))
+		painter.setPen(pen)
+		if not self.side:
+			painter.drawLine(QPointF(self.x_ld, self.y_ld), QPointF(self.xm, self.ym))
+		else:
+			painter.drawLine(QPointF(self.x_lu, self.y_lu), QPointF(self.xm, self.ym))
+		painter.drawLine(QPointF(self.xm, self.ym), QPointF(self.xe, self.ye))
+		painter.restore()
+
 
 class RightAngleUnit(QGraphicsObject):
 	def __init__(self, x1, y1, width1, width2, theta, direction, side, parent = None):
