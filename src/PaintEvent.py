@@ -61,7 +61,8 @@ class LineUnit(QGraphicsObject):
 		return [(self.x_ru2, self.y_ru2), (self.x_rd2, self.y_rd2)]
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def getSlope(self):
 		return math.atan2((self.y2 - self.y1),(self.x2 - self.x1))
@@ -103,7 +104,8 @@ class CenterLineUnit(QGraphicsObject):
 		self.width2 = width2
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def getSlope(self):
 		return math.atan2(float(self.y2 - self.y1),float(self.x2 - self.x1))
@@ -205,7 +207,8 @@ class ArcUnit(QGraphicsObject):
 			return [1, -1]
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def paint(self, painter, option, widget = None):
 		painter.save()
@@ -298,7 +301,8 @@ class CenterArcUnit(QGraphicsObject):
 			return [1, -1]
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def paint(self, painter, option, widget = None):
 		painter.save()
@@ -438,7 +442,8 @@ class AngleUnit(QGraphicsObject):
 		return [1 if self.compare_2_x > self.compare_1_x else -1, 1 if self.compare_2_y > self.compare_1_y else -1]
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def paint(self, painter, option, widget = None):
 		painter.save()
@@ -536,7 +541,8 @@ class RightAngleUnit(QGraphicsObject):
 		return [(float(self.x_ru + self.x_rd)/2.0, float(self.y_ru + self.y_rd)/2.0)]
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def paint(self, painter, option, widget = None):
 		painter.save()
@@ -564,7 +570,8 @@ class BlackAreaUnit(QGraphicsObject):
 		print "in black area:",self.pos
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def getTheta(self):
 		if self.direction[0] == 1:
@@ -604,7 +611,8 @@ class RampUnit(QGraphicsObject):
 		painter.restore()
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 class BarrierUnit(QGraphicsObject):
 	def __init__(self, x1, y1, position, theta, direction, id_, parent = None):
@@ -622,7 +630,8 @@ class BarrierUnit(QGraphicsObject):
 		self.id = id_
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def getOrigin(self):
 		return QPointF(self.x, self.y)
@@ -667,7 +676,8 @@ class CrossUnit(QGraphicsObject):
 		painter.restore()
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def getBeginPoint(self):
 		print "BeginPoint:", [(float(self.x_lu + self.point1_x)/2.0, float(self.y_lu + self.point1_y)/2.0), (float(self.x_ld + self.point2_x)/2.0, float(self.y_ld + self.point2_y)/2.0), (float(self.point2_x + self.point1_x)/2.0, float(self.point2_y + self.point1_y)/2.0)]
@@ -715,7 +725,8 @@ class BeginPointUnit(QGraphicsTextItem):
 		QGraphicsTextItem.setText(self, text)
 
 	def boundingRect(self):
-		return QRectF(0,0,1000,1000)
+		cor = self.mapFromScene(QPointF(0, 0))
+		return QRectF(cor.x(),cor.y(),cor.x()+1000,cor.y()+1000)
 
 	def setColor(self, color):
 		self.setDefaultTextColor(color)
