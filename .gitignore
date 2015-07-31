@@ -1,5 +1,5 @@
 # Python bytecode
-src/*.pyc
+*.pyc
 
 # build object
 src/mysetup.py
