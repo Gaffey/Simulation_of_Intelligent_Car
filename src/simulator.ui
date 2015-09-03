@@ -189,7 +189,7 @@
     <string>仿真步长(ms)：</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="StepEdit">
    <property name="geometry">
     <rect>
      <x>720</x>
@@ -197,6 +197,9 @@
      <width>71</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>10</string>
    </property>
   </widget>
   <widget class="QPushButton" name="StartButton">
@@ -249,6 +252,19 @@
    </property>
    <property name="text">
     <string>保存数据</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="LoadAIButton">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>10</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>加载ai</string>
    </property>
   </widget>
  </widget>
