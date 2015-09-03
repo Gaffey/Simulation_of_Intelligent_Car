@@ -5,6 +5,6 @@ class RacingCar(object):
         self.param = param
 
         self.pos = [0, 0]
-        self.toward = [0, 0]
+        self.toward = 0  # Unit: rad
         self.speed = 0
         self.acce = 0  # Acceleration.
