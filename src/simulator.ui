@@ -48,7 +48,7 @@
      <height>491</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout"/>
+   <layout class="QVBoxLayout" name="CenterLayout"/>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -124,6 +124,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLineEdit" name="AccelerateEdit">
    <property name="geometry">
@@ -133,6 +136,9 @@
      <width>113</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="OffsetEdit">
@@ -144,6 +150,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLineEdit" name="TimeEdit">
    <property name="geometry">
@@ -153,6 +162,9 @@
      <width>113</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLineEdit" name="CoordinateEdit">
@@ -164,6 +176,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QWidget" name="verticalLayoutWidget_2">
    <property name="geometry">
@@ -174,7 +189,7 @@
      <height>201</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2"/>
+   <layout class="QVBoxLayout" name="CameraLayout"/>
   </widget>
   <widget class="QLabel" name="label_6">
    <property name="geometry">
