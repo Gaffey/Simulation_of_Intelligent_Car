@@ -22,27 +22,39 @@ class StraightTrack(TrackPart):
         return math.sqrt((start_pos[0] - end_pos[0]) ** 2 +
                          (start_pos[1] - end_pos[1]) ** 2);
 
-class CurveTrack(TrackPart):
-    """Curve track"""
-    def __init__(self, index, center, radius, start_degree, end_degree,
-                 prev_track=None, next_track=None):
-        super(CurveTrack, self).__init__(index, prev_track, next_track)
-        self.index = index
-        self.center = center
-        self.radius = radius
-        self.start_degree = start_degree
-        self.end_degree = end_degree
+    @property
+    def start_direction(self):
+        pass
 
     @property
-    def start_pos(self):
+    def end_direction(self):
         pass
+
+
+class CurveTrack(TrackPart):
+    """Curve track"""
+    def __init__(self, index, start_pos, start_direction, radius, angle,
+                 prev_track=None, next_track=None):
+        super(CurveTrack, self).__init__(index, prev_track, next_track)
+        self.start_pos = start_pos
+        self.start_direction = start_direction
+        self.radius = radius
+        self.angle = angle
 
     @property
     def end_pos(self):
         pass
 
     @property
+    def end_direction(self):
+        pass
+
+    @property
     def length(self):
+        pass
+
+    @property
+    def center(self):
         pass
 
 
